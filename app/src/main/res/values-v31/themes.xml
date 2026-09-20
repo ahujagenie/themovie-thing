@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HindiMovies.Splash" parent="Theme.HindiMovies">
+        <item name="android:windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_logo</item>
+        <item name="android:statusBarColor">#0C0D0E</item>
+        <item name="android:navigationBarColor">#0C0D0E</item>
+    </style>
+</resources>

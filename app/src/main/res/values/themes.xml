@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HindiMovies" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#0C0D0E</item>
+        <item name="android:navigationBarColor">#0C0D0E</item>
+        <item name="android:windowBackground">#0C0D0E</item>
+    </style>
+
+    <style name="Theme.HindiMovies.Splash" parent="Theme.HindiMovies">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">#0C0D0E</item>
+        <item name="android:navigationBarColor">#0C0D0E</item>
+    </style>
+</resources>
