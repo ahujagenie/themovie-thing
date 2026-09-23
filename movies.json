@@ -721,6 +721,51 @@
       "description": "Raju, Shyam, and Baburao lose their lottery winnings to a fraudster and must scramble to repay a gangster's loan.",
       "isFeatured": false,
       "embeddingVerified": true
+    },
+    {
+      "id": "rajshri_vivah_2006",
+      "title": "Vivah",
+      "category": "❤️ Family & Evergreen Romance",
+      "channel": "Rajshri",
+      "youtubeId": "JKsmzHl7dUw",
+      "starring": "Shahid Kapoor, Amrita Rao, Anupam Kher",
+      "year": 2006,
+      "duration": "2h 58m",
+      "rating": "8.3",
+      "posterUrl": "https://upload.wikimedia.org/wikipedia/en/4/41/Vivah_%282006_film%29_poster.jpg",
+      "description": "Prem and Poonam are introduced for an arranged marriage, but a tragic fire accident hours before the wedding tests their devotion.",
+      "isFeatured": false,
+      "embeddingVerified": true
+    },
+    {
+      "id": "rajshri_hum_saath_saath_hain_1999",
+      "title": "Hum Saath-Saath Hain",
+      "category": "❤️ Family & Evergreen Romance",
+      "channel": "Rajshri",
+      "youtubeId": "Rgi_x7zq9IM",
+      "starring": "Salman Khan, Saif Ali Khan, Karisma Kapoor, Tabu, Sonali Bendre",
+      "year": 1999,
+      "duration": "3h 09m",
+      "rating": "8.1",
+      "posterUrl": "https://upload.wikimedia.org/wikipedia/en/c/c3/Hum_Saath-Saath_Hain.jpg",
+      "description": "A united Indian joint family is deeply challenged when manipulative in-laws plant seeds of doubt in the matriarch's heart.",
+      "isFeatured": false,
+      "embeddingVerified": true
+    },
+    {
+      "id": "rajshri_chitchor_1976",
+      "title": "Chitchor",
+      "category": "❤️ Family & Evergreen Romance",
+      "channel": "Rajshri",
+      "youtubeId": "TmiV2j0smX8",
+      "starring": "Amol Palekar, Zarina Wahab, Vijayendra Ghatge",
+      "year": 1976,
+      "duration": "1h 45m",
+      "rating": "8.0",
+      "posterUrl": "https://upload.wikimedia.org/wikipedia/en/b/b6/Chitchor_film.jpg",
+      "description": "A rural schoolmaster prepares to marry his daughter to an expected wealthy engineer, only to discover they welcomed the wrong guest.",
+      "isFeatured": false,
+      "embeddingVerified": true
     }
   ]
 }
