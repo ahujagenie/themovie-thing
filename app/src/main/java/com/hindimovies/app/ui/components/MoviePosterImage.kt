@@ -73,7 +73,7 @@ fun MoviePosterImage(
         SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(activeUrl)
-                .crossfade(true)
+                .crossfade(200)
                 .build(),
             contentDescription = movie.title,
             contentScale = contentScale,

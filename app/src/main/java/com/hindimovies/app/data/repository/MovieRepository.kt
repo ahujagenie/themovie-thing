@@ -7,9 +7,12 @@ import com.hindimovies.app.data.local.WatchlistEntity
 import com.hindimovies.app.data.model.Movie
 import com.hindimovies.app.data.model.MovieCatalog
 import com.hindimovies.app.data.model.MovieSearch
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -47,16 +50,15 @@ class MovieRepository(private val context: Context) {
     private val catalogMutex = Mutex()
     @Volatile
     private var cachedCatalog: MovieCatalog? = null
+    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     /**
-     * Loads the catalog with this priority:
-     * 1. Remote movies.json from GitHub (fresh, no app update needed),
-     *    persisted to a disk cache on success.
-     * 2. Last successfully fetched disk cache (offline / fetch failed).
-     * 3. Bundled assets/movies.json (first launch ever / nothing cached).
-     *
-     * Result is cached in memory, so a remote edit takes effect on the next
-     * cold start of the app.
+     * Fast Stale-While-Revalidate catalog loading:
+     * 1. Returns in-memory cache if already resolved.
+     * 2. Immediately loads disk cache or bundled assets/movies.json (< 10ms)
+     *    so the home screen renders instantly without blocking on network.
+     * 3. Asynchronously checks GitHub in the background for remote catalog
+     *    updates and silently updates the disk cache for future launches.
      */
     suspend fun getCatalog(): MovieCatalog = withContext(Dispatchers.IO) {
         cachedCatalog?.let { return@withContext it }
@@ -64,20 +66,24 @@ class MovieRepository(private val context: Context) {
         catalogMutex.withLock {
             cachedCatalog?.let { return@withLock it }
 
-            fetchRemoteCatalog()?.let {
-                cachedCatalog = it
-                return@withLock it
+            // Immediate local load: last saved disk cache or bundled catalog
+            val local = readDiskCache() ?: readBundledCatalog()
+            cachedCatalog = local
+
+            // Asynchronous background check for remote updates
+            repositoryScope.launch {
+                try {
+                    fetchRemoteCatalog()?.let { fresh ->
+                        catalogMutex.withLock {
+                            cachedCatalog = fresh
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Background remote catalog fetch failed", e)
+                }
             }
 
-            readDiskCache()?.let {
-                Log.i(TAG, "Using cached catalog from disk")
-                cachedCatalog = it
-                return@withLock it
-            }
-
-            val bundled = readBundledCatalog()
-            cachedCatalog = bundled
-            bundled
+            local
         }
     }
 

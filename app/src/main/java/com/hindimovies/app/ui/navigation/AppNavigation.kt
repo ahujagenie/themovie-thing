@@ -1,5 +1,12 @@
 package com.hindimovies.app.ui.navigation
 
+import android.content.pm.ActivityInfo
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,12 +20,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -44,6 +54,7 @@ import com.hindimovies.app.ui.theme.SurfaceBorder
 import com.hindimovies.app.ui.theme.SurfaceCard
 import com.hindimovies.app.ui.theme.TextMuted
 import com.hindimovies.app.ui.theme.TextSecondary
+import com.hindimovies.app.util.findActivity
 
 @Composable
 fun AppNavigation(
@@ -68,6 +79,23 @@ fun AppNavigation(
     // Box so "fullscreen" still renders as a small inset player. Note:
     // destination.route is the pattern ("player/{youtubeId}?..."), not values.
     val isPlayerRoute = currentRoute?.startsWith("player") == true
+
+    val context = LocalContext.current
+    LaunchedEffect(isPlayerRoute) {
+        if (!isPlayerRoute) {
+            val act = context.findActivity()
+            try {
+                if (act != null && act.requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                }
+                val window = act?.window
+                if (window != null) {
+                    val controller = WindowCompat.getInsetsController(window, window.decorView)
+                    controller.show(WindowInsetsCompat.Type.systemBars())
+                }
+            } catch (_: Exception) { }
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -128,7 +156,31 @@ fun AppNavigation(
             navController = navController,
             startDestination = Screen.Home.route,
             modifier = if (isPlayerRoute) Modifier.fillMaxSize()
-            else Modifier.padding(innerPadding)
+            else Modifier.padding(innerPadding),
+            enterTransition = {
+                fadeIn(animationSpec = tween(250)) +
+                    slideInHorizontally(
+                        animationSpec = tween(250, easing = FastOutSlowInEasing)
+                    ) { it / 8 }
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(200)) +
+                    slideOutHorizontally(
+                        animationSpec = tween(200, easing = FastOutSlowInEasing)
+                    ) { -it / 8 }
+            },
+            popEnterTransition = {
+                fadeIn(animationSpec = tween(250)) +
+                    slideInHorizontally(
+                        animationSpec = tween(250, easing = FastOutSlowInEasing)
+                    ) { -it / 8 }
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(200)) +
+                    slideOutHorizontally(
+                        animationSpec = tween(200, easing = FastOutSlowInEasing)
+                    ) { it / 8 }
+            }
         ) {
             // Home Tab
             composable(Screen.Home.route) {
@@ -196,7 +248,9 @@ fun AppNavigation(
                 )
             }
 
-            // YouTube Player Screen
+            // YouTube Player Screen — fade only (no slide): the destination
+            // hosts AndroidView surfaces (YouTubePlayerView / WebView) that
+            // must not be translated mid-transition.
             composable(
                 route = Screen.Player.route,
                 arguments = listOf(
@@ -205,7 +259,11 @@ fun AppNavigation(
                         type = NavType.StringType
                         defaultValue = "Movie"
                     }
-                )
+                ),
+                enterTransition = { fadeIn(animationSpec = tween(250)) },
+                exitTransition = { fadeOut(animationSpec = tween(200)) },
+                popEnterTransition = { fadeIn(animationSpec = tween(250)) },
+                popExitTransition = { fadeOut(animationSpec = tween(200)) }
             ) { backStackEntry ->
                 val youtubeId = backStackEntry.arguments?.getString("youtubeId").orEmpty()
                 val movieTitle = backStackEntry.arguments?.getString("movieTitle").orEmpty()

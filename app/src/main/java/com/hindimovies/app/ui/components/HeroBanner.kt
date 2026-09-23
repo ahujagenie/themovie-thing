@@ -2,6 +2,14 @@ package com.hindimovies.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -31,10 +39,14 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -66,14 +78,20 @@ fun HeroBanner(
     modifier: Modifier = Modifier,
     badgeText: String = "FEATURED #1"
 ) {
+    val heroInteraction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(380.dp)
             .padding(horizontal = 16.dp, vertical = 6.dp)
+            .pressScale(heroInteraction, pressedScale = 0.98f)
             .clip(RoundedCornerShape(20.dp))
             .border(1.dp, SurfaceBorder, RoundedCornerShape(20.dp))
-            .clickable { onDetailClick(movie) }
+            .clickable(
+                interactionSource = heroInteraction,
+                indication = androidx.compose.foundation.LocalIndication.current,
+                onClick = { onDetailClick(movie) }
+            )
     ) {
         // High-Resolution Backdrop or Theatrical Poster
         MoviePosterImage(
@@ -192,17 +210,31 @@ fun HeroBanner(
                         )
                     )
                 ) {
-                    Icon(
-                        imageVector = if (isInWatchlist) Icons.Default.Check else Icons.Default.Add,
-                        contentDescription = null,
-                        tint = if (isInWatchlist) AccentEmerald else TextPrimary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (isInWatchlist) "Saved" else "Watchlist",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp
-                    )
+                    AnimatedContent(
+                        targetState = isInWatchlist,
+                        transitionSpec = {
+                            (fadeIn(animationSpec = tween(150)) +
+                                scaleIn(
+                                    animationSpec = tween(150),
+                                    initialScale = 0.96f
+                                )) togetherWith fadeOut(animationSpec = tween(150))
+                        },
+                        label = "HeroWatchlistToggle"
+                    ) { isSaved ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (isSaved) Icons.Default.Check else Icons.Default.Add,
+                                contentDescription = null,
+                                tint = if (isSaved) AccentEmerald else TextPrimary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (isSaved) "Saved" else "Watchlist",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -282,6 +314,16 @@ fun HeroCarousel(
         ) {
             movies.indices.forEach { index ->
                 val selected = index == pagerState.currentPage
+                val dotScale by animateFloatAsState(
+                    targetValue = if (selected) 1f else 0.75f,
+                    animationSpec = tween(250, easing = FastOutSlowInEasing),
+                    label = "heroDotScale"
+                )
+                val dotAlpha by animateFloatAsState(
+                    targetValue = if (selected) 1f else 0.35f,
+                    animationSpec = tween(250),
+                    label = "heroDotAlpha"
+                )
                 // 32dp hit target (up from a 6-8dp dot) with a TalkBack label.
                 Box(
                     modifier = Modifier
@@ -301,12 +343,14 @@ fun HeroCarousel(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(if (selected) 8.dp else 6.dp)
+                            .size(8.dp)
+                            .graphicsLayer {
+                                scaleX = dotScale
+                                scaleY = dotScale
+                                alpha = dotAlpha
+                            }
                             .clip(CircleShape)
-                            .background(
-                                if (selected) Color.White
-                                else Color.White.copy(alpha = 0.35f)
-                            )
+                            .background(Color.White)
                     )
                 }
             }

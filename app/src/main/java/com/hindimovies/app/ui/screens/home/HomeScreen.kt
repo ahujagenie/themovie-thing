@@ -216,7 +216,9 @@ fun HomeScreen(
                     categoryTitle = categoryName,
                     movies = movies,
                     onMovieClick = onMovieClick,
-                    modifier = Modifier.padding(vertical = 10.dp)
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .animateItem()
                 )
             }
         }

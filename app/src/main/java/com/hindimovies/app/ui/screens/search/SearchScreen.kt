@@ -38,6 +38,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -193,31 +200,43 @@ fun SearchScreen(
                         .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                    val emptyEnter = remember {
+                        MutableTransitionState(false).apply { targetState = true }
+                    }
+                    AnimatedVisibility(
+                        visibleState = emptyEnter,
+                        enter = fadeIn(
+                            animationSpec = tween(300, easing = LinearOutSlowInEasing)
+                        ) + slideInVertically(
+                            animationSpec = tween(300, easing = LinearOutSlowInEasing)
+                        ) { 32 }
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.illu_empty_search),
-                            contentDescription = "Search Movies",
-                            modifier = Modifier.size(160.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = if (uiState.query.isBlank()) "No Movies Available" else "No Movies Found",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = if (uiState.query.isBlank())
-                                "The catalog is empty right now. Please check back later."
-                            else
-                                "No titles matched \"${uiState.query}\". Try searching another actor or genre.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextMuted,
-                            textAlign = TextAlign.Center
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.illu_empty_search),
+                                contentDescription = "Search Movies",
+                                modifier = Modifier.size(160.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = if (uiState.query.isBlank()) "No Movies Available" else "No Movies Found",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = if (uiState.query.isBlank())
+                                    "The catalog is empty right now. Please check back later."
+                                else
+                                    "No titles matched \"${uiState.query}\". Try searching another actor or genre.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextMuted,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
@@ -246,7 +265,8 @@ fun SearchScreen(
                     MovieCard(
                         movie = movie,
                         onMovieClick = onMovieClick,
-                        cardWidth = null
+                        cardWidth = null,
+                        modifier = Modifier.animateItem()
                     )
                 }
             }

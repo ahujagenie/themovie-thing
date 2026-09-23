@@ -3,7 +3,7 @@
 **Effective Date:** September 20, 2026  
 **Last Updated:** September 20, 2026  
 
-This Privacy Policy explains how **Hindi Cinema Movie Zone** ("we", "our", or "the App"), package name `com.hindimovies.app`, handles user information.
+This Privacy Policy explains how **Hindi Cinema Movie Zone** ("we", "our", or "the App"), package name `com.southaction.hindimovies`, handles user information.
 
 We are committed to protecting your privacy. This mobile application is designed as a zero-friction movie discovery and playback curation tool: **we do not require an account, we do not track your identity, and we do not collect any personally identifiable information (PII).**
 
@@ -97,4 +97,4 @@ If you have questions, suggestions, or concerns regarding this Privacy Policy or
 
 - **Support / Inquiries:** Application Support Team
 - **Email:** [contact@backlinks.fyi](mailto:contact@backlinks.fyi)
-- **Application:** Hindi Cinema Movie Zone (`com.hindimovies.app`)
+- **Application:** Hindi Cinema Movie Zone (`com.southaction.hindimovies`)

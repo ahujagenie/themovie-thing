@@ -10,3 +10,8 @@
 local.properties
 app/build
 *.hprof
+
+# Keystore and signing secrets
+*.jks
+*.keystore
+keystore.properties

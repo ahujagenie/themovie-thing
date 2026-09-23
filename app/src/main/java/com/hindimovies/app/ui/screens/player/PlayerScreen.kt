@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +43,10 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -154,6 +160,16 @@ fun PlayerScreen(
         return context.findActivity()?.takeIf { !it.isFinishing && !it.isDestroyed }
     }
 
+    val currentOnBack by rememberUpdatedState(onBackClick)
+    fun exitPlayer() {
+        try {
+            resolveActivity()?.requestedOrientation =
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } catch (_: Exception) { }
+        isFullscreen = false
+        currentOnBack()
+    }
+
     val toggleFullscreen = {
         val act = resolveActivity()
         if (act == null) {
@@ -175,8 +191,10 @@ fun PlayerScreen(
         }
     }
 
-    // Only intercept back for manual fullscreen. A pure sensor rotation
-    // (isLandscape without isFullscreen) should pop the back stack normally.
+    // First back press exits manual fullscreen; second (now portrait) pops.
+    // Sensor rotation is intentionally NOT treated as fullscreen: the app is
+    // manifest portrait-locked, so physical rotation never changes layout and
+    // can never leak a landscape lock onto Home (the reported bug).
     BackHandler(enabled = isFullscreen) {
         val act = resolveActivity()
         act?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -185,8 +203,13 @@ fun PlayerScreen(
 
     DisposableEffect(Unit) {
         onDispose {
+            // Restore the manifest portrait lock after a manual LANDSCAPE
+            // fullscreen. Belt-and-braces: exitPlayer() already does this
+            // before popping, this covers the system-back path.
             val act = resolveActivity()
-            act?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            try {
+                act?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            } catch (_: Exception) { }
             val window = act?.window
             if (window != null) {
                 val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -276,7 +299,7 @@ fun PlayerScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                onClick = onBackClick,
+                onClick = { exitPlayer() },
                 colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
                 shape = RoundedCornerShape(8.dp)
             ) {
@@ -300,7 +323,7 @@ fun PlayerScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = onBackClick,
+                    onClick = { exitPlayer() },
                     modifier = Modifier
                         .size(44.dp)
                         .background(SurfaceCard, CircleShape)
@@ -346,7 +369,7 @@ fun PlayerScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = onBackClick,
+                    onClick = { exitPlayer() },
                     modifier = Modifier
                         .size(44.dp)
                         .background(SurfaceCard, CircleShape)
@@ -506,7 +529,11 @@ fun PlayerScreen(
                     )
                 }
 
-                if (isLoading) {
+                AnimatedVisibility(
+                    visible = isLoading,
+                    enter = fadeIn(animationSpec = tween(200)),
+                    exit = fadeOut(animationSpec = tween(200))
+                ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -542,7 +569,9 @@ fun PlayerScreen(
                         onClick = toggleFullscreen,
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .padding(16.dp)
+                            .statusBarsPadding()
+                            .displayCutoutPadding()
+                            .padding(start = 16.dp, top = 8.dp)
                             .size(44.dp)
                             .background(Color.Black.copy(alpha = 0.7f), CircleShape)
                             .border(1.dp, SurfaceBorder, CircleShape)

@@ -2,6 +2,12 @@ package com.hindimovies.app.ui.screens.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -221,17 +227,31 @@ fun DetailScreen(
                             brush = Brush.linearGradient(listOf(SurfaceBorder, SurfaceBorder))
                         )
                     ) {
-                        Icon(
-                            imageVector = if (uiState.isInWatchlist) Icons.Default.Check else Icons.Default.Add,
-                            contentDescription = null,
-                            tint = if (uiState.isInWatchlist) AccentEmerald else TextPrimary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (uiState.isInWatchlist) "Saved" else "Watchlist",
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 12.sp
-                        )
+                        AnimatedContent(
+                            targetState = uiState.isInWatchlist,
+                            transitionSpec = {
+                                (fadeIn(animationSpec = tween(150)) +
+                                    scaleIn(
+                                        animationSpec = tween(150),
+                                        initialScale = 0.96f
+                                    )) togetherWith fadeOut(animationSpec = tween(150))
+                            },
+                            label = "WatchlistToggle"
+                        ) { isSaved ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = if (isSaved) Icons.Default.Check else Icons.Default.Add,
+                                    contentDescription = null,
+                                    tint = if (isSaved) AccentEmerald else TextPrimary
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = if (isSaved) "Saved" else "Watchlist",
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -328,7 +348,8 @@ fun DetailScreen(
                     items(uiState.relatedMovies, key = { it.id }) { related ->
                         MovieCard(
                             movie = related,
-                            onMovieClick = onRelatedMovieClick
+                            onMovieClick = onRelatedMovieClick,
+                            modifier = Modifier.animateItem()
                         )
                     }
                 }

@@ -61,7 +61,8 @@ fun GenreRow(
             items(movies, key = { it.id }) { movie ->
                 MovieCard(
                     movie = movie,
-                    onMovieClick = onMovieClick
+                    onMovieClick = onMovieClick,
+                    modifier = Modifier.animateItem()
                 )
             }
         }
