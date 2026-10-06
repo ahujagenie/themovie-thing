@@ -1,12 +1,12 @@
 {
   "config": {
-    "featuredMovieId": "goldmines_dj_2017",
+    "featuredMovieId": "rkd_junior_2025",
     "featuredMovieIds": [
-      "goldmines_dj_2017",
-      "shemaroo_housefull2_2012",
-      "goldmines_dhruva_2016",
-      "rajshri_anari_1975",
-      "goldmines_sooryavansham_1999"
+      "rkd_junior_2025",
+      "nh_kabir_singh_2019",
+      "shemaroomovies_deewane_2005",
+      "ultra_mp_nayak_2001",
+      "shemaroomovies_guide_1965"
     ],
     "categoryOrder": [
       "🔥 South Action (Hindi Dubbed)",
@@ -29,7 +29,7 @@
       "rating": "8.5",
       "posterUrl": "https://upload.wikimedia.org/wikipedia/en/7/72/DJ_film_poster.jpg",
       "description": "An undercover operative poses as a traditional temple cook to infiltrate and dismantle a massive real estate crime syndicate.",
-      "isFeatured": true,
+      "isFeatured": false,
       "embeddingVerified": true
     },
     {
@@ -914,7 +914,7 @@
       "rating": "8.7",
       "posterUrl": "https://i.ytimg.com/vi/lQ-OEq0k75c/maxresdefault.jpg",
       "description": "A tour guide abandons respectability for love and spiritual fame, then faces the cost of reinvention.",
-      "isFeatured": false,
+      "isFeatured": true,
       "embeddingVerified": true
     },
     {
@@ -1034,7 +1034,7 @@
       "rating": "7.0",
       "posterUrl": "https://i.ytimg.com/vi/VaYKM9WTt00/maxresdefault.jpg",
       "description": "A brilliant but self-destructive surgeon spirals after a forced breakup, chasing love and oblivion.",
-      "isFeatured": false,
+      "isFeatured": true,
       "embeddingVerified": true
     },
     {
@@ -1214,7 +1214,7 @@
       "rating": "8.2",
       "posterUrl": "https://i.ytimg.com/vi/QARCLSL7C-k/maxresdefault.jpg",
       "description": "A TV journalist is handed chief ministership for one day and vows to dismantle a corrupt machine.",
-      "isFeatured": false,
+      "isFeatured": true,
       "embeddingVerified": true
     },
     {
@@ -1544,7 +1544,7 @@
       "rating": "6.8",
       "posterUrl": "https://i.ytimg.com/vi/sJvv1liBiQY/maxresdefault.jpg",
       "description": "A young man sets out to heal his strained bond with his father and uncovers life-changing truths.",
-      "isFeatured": false,
+      "isFeatured": true,
       "embeddingVerified": true
     },
     {
@@ -2564,7 +2564,7 @@
       "rating": "6.0",
       "posterUrl": "https://i.ytimg.com/vi/Mwhra8KI8UU/maxresdefault.jpg",
       "description": "Rivals chase the same girl to Dubai with hilarious results.",
-      "isFeatured": false,
+      "isFeatured": true,
       "embeddingVerified": true
     },
     {
